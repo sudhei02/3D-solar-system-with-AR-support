@@ -53,7 +53,7 @@ function main() {
     };
   }
 
-  // create multiple planets
+  // create multiple planets one by one 
   const planets = [];
   planets.push(createPlanet(0.4, 0x8C7853, 6, 0.02)); // mercury, closest to sun
   planets.push(createPlanet(0.6, 0xC0C0C0, 10, 0.01)); // venus
@@ -87,14 +87,18 @@ function main() {
       camera.updateProjectionMatrix();
     }
 
+    //rotate sun
     sun.rotation.x = time * 0.5;
     sun.rotation.y = time * 0.5;
 
+    // animate planets 
     planets.forEach((planetData) => {
       planetData.orbitGroup.rotation.y = time * planetData.orbitSpeed; // orbit around sun
 
       planetData.planet.rotation.y = time * planetData.rotationSpeed; // rotate on its own axis
     });
+
+    //come here again and try the cos&sin functions for more realistic orbits
 
     renderer.render(scene, camera);
     requestAnimationFrame(render);
