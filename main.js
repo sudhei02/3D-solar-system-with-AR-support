@@ -34,7 +34,19 @@ function main() {
     heightSegments
   );
   const sunTexture = textureLoader.load('./assets/sun.jpg',
-    onLoad, onProgress, onError);
+    // onLoad
+    function(texture) {
+      console.log('Sun texture loaded:');
+    },
+    // onProgress
+    function(xhr) {
+      console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+    },
+    // onError
+    function(error) {
+      console.error('Error loading sun texture:', error);
+    }
+  );
   const sunMaterial = new THREE.MeshPhongMaterial({ map: sunTexture });
   const sun = new THREE.Mesh(sunGeometry, sunMaterial);
   scene.add(sun);
@@ -42,7 +54,23 @@ function main() {
   // planet creation function
   function createPlanet(radius, texturePath, orbitRadius, orbitSpeed) {
     const geometry = new THREE.SphereGeometry(radius, 24, 8);
-    const texture = textureLoader.load(texturePath, onLoad, onProgress, onError);
+   
+    const texture = textureLoader.load(texturePath, 
+      // onLoad, 
+      function(texture){
+        console.log('Texture loaded:');
+       },
+
+       //onProgress,
+      function(xhr) {
+         console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+       },
+
+      // onError
+      function(error) {
+        console.error('Error loading texture:', error);
+      }
+    );
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
     texture.repeat.set(2, 2); // Repeat texture
