@@ -1,0 +1,12 @@
+{
+  "name": "3D Solar System with AR Support",
+  "short_name": "Solar System AR",
+  "description": "Interactive 3D solar system with augmented reality support",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#4CAF50",
+  "orientation": "any",
+  "categories": ["education", "entertainment"],
+  "icons": []
+}

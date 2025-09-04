@@ -1,27 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
-<head> 
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=1.0, user-scalable=yes">
-    <div id="info">Description: A simple 3D scene with a flying spheres, we call em planets.</div>
-    <title>My first three.js app</title>
-</head>
-<body>
-    <script type="module" src="/main.js">
-    </script>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Required for AR on mobile devices -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+
+    <!-- PWA and AR functionality -->
+    <link rel="manifest" href="manifest.json" />
+    <link
+      rel="apple-touch-icon"
+      href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjE5MiIgaGVpZ2h0PSIxOTIiIGZpbGw9IiMwMDAwMDAiLz48Y2lyY2xlIGN4PSI5NiIgY3k9Ijk2IiByPSIzMCIgZmlsbD0iI0ZGQTUwMCIvPjxjaXJjbGUgY3g9IjE0MCIgY3k9Ijk2IiByPSI4IiBmaWxsPSIjNENBRjUwIi8+PGNpcmNsZSBjeD0iNTIiIGN5PSI5NiIgcj0iNiIgZmlsbD0iIzlDOTZGOCIvPjwvc3ZnPg=="
+    />
+    <meta name="theme-color" content="#4CAF50" />
+
+    <div id="info">
+      <h3>3D Solar System with AR Support</h3>
+      <p>
+        Explore the solar system in your browser or enable AR mode to see
+        planets floating in your space!
+      </p>
+      <p>
+        <strong>AR Requirements:</strong> HTTPS connection, compatible mobile
+        browser (Chrome/Edge/Safari)
+      </p>
+    </div>
+    <title>3D Solar System with AR</title>
+  </head>
+  <body>
+    <script type="module" src="/main.js"></script>
     <canvas id="c"></canvas>
     <style>
-        html,
-        body {
-            margin: 1em;
-            height: 100%;
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: #000;
+        color: #fff;
+        overflow: hidden;
+      }
+
+      #c {
+        width: 100vw;
+        height: 100vh;
+        display: block;
+        background: transparent;
+      }
+
+      #info {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        right: 10px;
+        z-index: 100;
+        background: rgba(0, 0, 0, 0.8);
+        padding: 15px;
+        border-radius: 10px;
+        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(10px);
+        max-width: 400px;
+      }
+
+      #info h3 {
+        margin: 0 0 10px 0;
+        color: #4caf50;
+      }
+
+      #info p {
+        margin: 5px 0;
+        font-size: 14px;
+        line-height: 1.4;
+      }
+
+      /* Hide info on small screens in landscape or when AR is active */
+      @media (max-height: 500px) and (orientation: landscape) {
+        #info {
+          display: none;
         }
-    
-        #c {
-            width: 100%;
-            height: 100%;
-            display: block;
+      }
+
+      /* Responsive design for mobile */
+      @media (max-width: 768px) {
+        #info {
+          font-size: 12px;
+          padding: 10px;
         }
+      }
     </style>
-</body>
+  </body>
 </html>
