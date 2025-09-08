@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@types/webxr": "^0.5.23",
     "p5": "^2.0.5",
     "three": "^0.179.1"
   },

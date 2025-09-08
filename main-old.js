@@ -1,54 +1,13 @@
 import * as THREE from "three";
+import App from './App.js';
+
+const app = new App();
+app.start();
+
 
 function main() {
   const canvas = document.querySelector("#c");
   const renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
-  
-  // Step 1: Enable WebXR support
-  renderer.xr.enabled = true;
-
-  // Step 2: Create AR Button
-  function createARButton() {
-    const button = document.createElement('button');
-    button.style.position = 'absolute';
-    button.style.bottom = '20px';
-    button.style.left = '50%';
-    button.style.transform = 'translateX(-50%)';
-    button.style.padding = '12px 24px';
-    button.style.background = '#1f1f1f';
-    button.style.color = 'white';
-    button.style.border = 'none';
-    button.style.borderRadius = '6px';
-    button.style.cursor = 'pointer';
-    button.style.fontSize = '16px';
-    button.style.fontFamily = 'Arial, sans-serif';
-    button.textContent = 'Enter AR';
-
-    button.onclick = async () => {
-      if (navigator.xr) {
-        try {
-          const session = await navigator.xr.requestSession('immersive-ar', {
-            requiredFeatures: ['local-floor']
-          });
-          renderer.xr.setSession(session);
-          button.textContent = 'Exit AR';
-          
-          session.addEventListener('end', () => {
-            button.textContent = 'Enter AR';
-          });
-        } catch (error) {
-          console.log('AR not supported or failed:', error);
-          button.textContent = 'AR Not Available';
-        }
-      } else {
-        console.log('WebXR not supported');
-        button.textContent = 'WebXR Not Supported';
-      }
-    };
-
-    document.body.appendChild(button);
-    return button;
-  }
 
   const fov = 75;
   const aspect = 2; // the canvas default
@@ -59,11 +18,6 @@ function main() {
 
   const scene = new THREE.Scene();
 
-  // Step 5: Create a group for the solar system to scale it for AR
-  const solarSystemGroup = new THREE.Group();
-  solarSystemGroup.scale.setScalar(0.8); // Scale down for AR
-  scene.add(solarSystemGroup);
-
   // Create texture loader
   const textureLoader = new THREE.TextureLoader();
 
@@ -72,7 +26,7 @@ function main() {
     const intensity = 3;
     const light = new THREE.DirectionalLight(color, intensity);
     light.position.set(-1, 2, 4);
-    scene.add(light);
+    scene.add(light); // niye burda ışık ekliyoruz + parantezlerin arası boşluk kalıyor ?
   }
 
   // sun at the center
@@ -84,22 +38,54 @@ function main() {
     widthSegments,
     heightSegments
   );
-  const sunTexture = textureLoader.load('./assets/sun.jpg');
+  const sunTexture = textureLoader.load('./assets/sun.jpg',
+    // onLoad
+    function(texture) {
+      console.log('Sun texture loaded:');
+    },
+    // onProgress
+    function(xhr) {
+      console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+    },
+    // onError
+    function(error) {
+      console.error('Error loading sun texture:', error);
+    }
+  );
   const sunMaterial = new THREE.MeshPhongMaterial({ map: sunTexture });
   const sun = new THREE.Mesh(sunGeometry, sunMaterial);
-  solarSystemGroup.add(sun); // Add to solar system group
+  scene.add(sun);
 
   // planet creation function
   function createPlanet(radius, texturePath, orbitRadius, orbitSpeed) {
     const geometry = new THREE.SphereGeometry(radius, 24, 8);
-    const texture = textureLoader.load(texturePath);
+   
+    const texture = textureLoader.load(texturePath, 
+      // onLoad, 
+      function(texture){
+        console.log('Texture loaded:');
+       },
+
+       //onProgress,
+      function(xhr) {
+         console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+       },
+
+      // onError
+      function(error) {
+        console.error('Error loading texture:', error);
+      }
+    );
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(2, 2); // Repeat texture
     const material = new THREE.MeshPhongMaterial({ map: texture });
     const planet = new THREE.Mesh(geometry, material);
 
     const orbitGroup = new THREE.Group();
-    planet.position.x = orbitRadius;
+    planet.position.x = orbitRadius; // set initial position on the orbit
     orbitGroup.add(planet);
-    solarSystemGroup.add(orbitGroup); // Add to solar system group
+    scene.add(orbitGroup);
 
     return {
       planet: planet,
@@ -109,9 +95,9 @@ function main() {
     };
   }
 
-  // create multiple planets
+  // create multiple planets one by one 
   const planets = [];
-  planets.push(createPlanet(0.4, './assets/mercury.jpg', 6, 0.02)); // mercury
+  planets.push(createPlanet(0.4, './assets/mercury.jpg', 6, 0.02)); // mercury, closest to sun
   planets.push(createPlanet(0.6, './assets/venus.jpg', 10, 0.01)); // venus
   planets.push(createPlanet(0.8, './assets/earth.jpg', 14, 0.005)); // earth
   planets.push(createPlanet(0.5, './assets/mars.jpg', 18, 0.003)); // mars
@@ -120,8 +106,9 @@ function main() {
   planets.push(createPlanet(1.0, './assets/uranus.jpg', 30, 0.0005)); // uranus
   planets.push(createPlanet(1.5, './assets/neptune.jpg', 34, 0.0002)); // neptune
 
-  // Step 3: Initialize AR button
-  const arButton = createARButton();
+
+  // renderer.setSize(window.innerWidth, window.innerHeight);
+  // document.body.appendChild(renderer.domElement); // bunu yaparsan ekranda genisligi artiyor, kesvettim ki pixel gorunumunu hd yapiyor
 
   function resizeRendererToDisplaySize(renderer) {
     const canvas = renderer.domElement;
@@ -132,6 +119,7 @@ function main() {
     if (needResize) {
       renderer.setSize(width, height, false);
     }
+
     return needResize;
   }
 
@@ -144,22 +132,24 @@ function main() {
       camera.updateProjectionMatrix();
     }
 
-    // rotate sun
+    //rotate sun
     sun.rotation.x = time * 0.5;
     sun.rotation.y = time * 0.5;
 
     // animate planets 
     planets.forEach((planetData) => {
-      planetData.orbitGroup.rotation.y = time * planetData.orbitSpeed;
-      planetData.planet.rotation.y = time * planetData.rotationSpeed;
+      planetData.orbitGroup.rotation.y = time * planetData.orbitSpeed; // orbit around sun
+
+      planetData.planet.rotation.y = time * planetData.rotationSpeed; // rotate on its own axis
     });
+
+    //come here again and try the cos&sin functions for more realistic orbits
 
     renderer.render(scene, camera);
     requestAnimationFrame(render);
   }
 
-  // Step 4: Use XR-compatible animation loop
-  renderer.setAnimationLoop(render);
+  requestAnimationFrame(render);
 }
 
-main();
+main(); // bunu cagirmayinca gelmiyo, interesting

@@ -3,7 +3,9 @@
  * @author mrdoob / http://mrdoob.com
  */
 
-THREE.VRControls = function ( object, onError ) {
+import * as THREE from 'three';
+
+function VRControls( object, onError ) {
 
 	var scope = this;
 
@@ -146,4 +148,6 @@ THREE.VRControls = function ( object, onError ) {
 
 	};
 
-};
+}
+
+export default VRControls;
