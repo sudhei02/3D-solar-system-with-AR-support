@@ -1,9 +1,18 @@
 {
   "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "strict": true,
+    "noEmit": true,
     "baseUrl": ".",
     "paths": {
+      "three": ["./node_modules/three/build/three.module.js"],
       "three/webgpu": ["./node_modules/three/build/three.webgpu.js"],
       "three/tsl": ["./node_modules/three/build/three.tsl.js"]
     }
-  }
+  },
+  "include": ["src/**/*", "*.js", "*.ts"],
+  "exclude": ["node_modules", "dist"]
 }
