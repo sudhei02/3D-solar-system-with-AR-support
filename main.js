@@ -55,7 +55,7 @@ function main() {
   const near = 0.1;
   const far = 50;
   const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-  camera.position.z = 25;
+  camera.position.z = 35;
 
   const scene = new THREE.Scene();
 
@@ -502,7 +502,7 @@ function main() {
   // Scientifically accurate orbital speeds (based on real orbital periods)
   // Base speed for Earth = 0.01, others scaled accordingly
   
-  planets.push(createPlanet(0.4, 'mercury', 6, 0.041));   // 88 days (365/88 = 4.1x faster than Earth)
+  planets.push(createPlanet(0.4, 'mercury', 6, 0.50));   // 88 days (365/88 = 4.1x faster than Earth)
   planets.push(createPlanet(0.6, 'venus', 10, 0.016, {    // 225 days (365/225 = 1.6x faster than Earth)
     atmosphere: 0xffdd88
   }));
