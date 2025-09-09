@@ -51,7 +51,7 @@ function main() {
   }
 
   const fov = 75;
-  const aspect = 2; // the canvas default
+  const aspect = 2;
   const near = 0.1;
   const far = 50;
   const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
@@ -59,21 +59,250 @@ function main() {
 
   const scene = new THREE.Scene();
 
+  // MOUSE/TOUCH CONTROLS: Add OrbitControls for navigation
+  let controls;
+  
+  // Import controls dynamically to avoid issues
+  import('https://cdn.skypack.dev/three@0.132.2/examples/jsm/controls/OrbitControls.js')
+    .then(({ OrbitControls }) => {
+      controls = new OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true; // Smooth camera movement
+      controls.dampingFactor = 0.05;
+      controls.enableZoom = true;
+      controls.enablePan = true;
+      controls.enableRotate = true;
+      controls.autoRotate = false;
+      
+      // Set boundaries
+      controls.minDistance = 10;
+      controls.maxDistance = 100;
+      controls.maxPolarAngle = Math.PI; // Allow full vertical rotation
+    })
+    .catch(error => {
+      console.log('OrbitControls not available:', error);
+    });
+
+  // RAYCASTING: Set up click detection for planets
+  const raycaster = new THREE.Raycaster();
+  const mouse = new THREE.Vector2();
+  let clickableObjects = []; // Store planet meshes for clicking
+
+  // PLANET FACTS: Database of planet information
+  const planetFacts = {
+    sun: {
+      name: "The Sun",
+      facts: [
+        "The Sun is 4.6 billion years old",
+        "Surface temperature: 5,778K (5,505°C)",
+        "It's 109 times wider than Earth",
+        "The Sun accounts for 99.86% of our solar system's mass"
+      ]
+    },
+    mercury: {
+      name: "Mercury", 
+      facts: [
+        "Closest planet to the Sun",
+        "One day on Mercury = 59 Earth days",
+        "No atmosphere or moons",
+        "Temperature ranges from -173°C to 427°C"
+      ]
+    },
+    venus: {
+      name: "Venus",
+      facts: [
+        "Hottest planet in our solar system",
+        "Surface temperature: 462°C",
+        "Spins backwards (retrograde rotation)",
+        "One day on Venus = 243 Earth days"
+      ]
+    },
+    earth: {
+      name: "Earth",
+      facts: [
+        "The only known planet with life",
+        "71% of surface is covered by water",
+        "Has one natural satellite (the Moon)",
+        "Atmosphere is 78% nitrogen, 21% oxygen"
+      ]
+    },
+    mars: {
+      name: "Mars",
+      facts: [
+        "Known as the 'Red Planet'",
+        "Has the largest volcano in the solar system",
+        "One day on Mars = 24.6 Earth hours",
+        "Has two small moons: Phobos and Deimos"
+      ]
+    },
+    jupiter: {
+      name: "Jupiter",
+      facts: [
+        "Largest planet in our solar system",
+        "Has a Great Red Spot storm for 400+ years",
+        "Has at least 95 known moons",
+        "Could fit 1,300 Earths inside it"
+      ]
+    },
+    saturn: {
+      name: "Saturn",
+      facts: [
+        "Famous for its prominent ring system",
+        "Has at least 146 known moons",
+        "Less dense than water",
+        "Winds can reach 1,800 km/h"
+      ]
+    },
+    uranus: {
+      name: "Uranus",
+      facts: [
+        "Rotates on its side (98° tilt)",
+        "Coldest planetary atmosphere: -224°C",
+        "Has faint rings discovered in 1977",
+        "Has 27 known moons"
+      ]
+    },
+    neptune: {
+      name: "Neptune",
+      facts: [
+        "Windiest planet with speeds up to 2,100 km/h",
+        "Farthest planet from the Sun",
+        "One year on Neptune = 165 Earth years",
+        "Has 16 known moons"
+      ]
+    }
+  };
+
+  // UI CREATION: Create info panel for displaying facts
+  function createInfoPanel() {
+    const panel = document.createElement('div');
+    panel.id = 'info-panel';
+    panel.style.position = 'absolute';
+    panel.style.top = '20px';
+    panel.style.left = '20px';
+    panel.style.background = 'rgba(0, 0, 0, 0.8)';
+    panel.style.color = 'white';
+    panel.style.padding = '20px';
+    panel.style.borderRadius = '10px';
+    panel.style.maxWidth = '300px';
+    panel.style.display = 'none';
+    panel.style.fontSize = '14px';
+    panel.style.fontFamily = 'Arial, sans-serif';
+    panel.style.zIndex = '1000';
+    
+    const closeButton = document.createElement('button');
+    closeButton.textContent = '×';
+    closeButton.style.position = 'absolute';
+    closeButton.style.top = '5px';
+    closeButton.style.right = '10px';
+    closeButton.style.background = 'none';
+    closeButton.style.border = 'none';
+    closeButton.style.color = 'white';
+    closeButton.style.fontSize = '20px';
+    closeButton.style.cursor = 'pointer';
+    closeButton.onclick = () => panel.style.display = 'none';
+    
+    panel.appendChild(closeButton);
+    document.body.appendChild(panel);
+    return panel;
+  }
+
+  const infoPanel = createInfoPanel();
+
+  // CLICK HANDLER: Function to show planet facts
+  function showPlanetInfo(planetName) {
+    const info = planetFacts[planetName];
+    if (!info) return;
+
+    const title = document.createElement('h3');
+    title.textContent = info.name;
+    title.style.margin = '0 0 15px 0';
+    title.style.color = '#ffd700';
+
+    const factsList = document.createElement('ul');
+    factsList.style.margin = '0';
+    factsList.style.paddingLeft = '20px';
+    
+    info.facts.forEach(fact => {
+      const listItem = document.createElement('li');
+      listItem.textContent = fact;
+      listItem.style.marginBottom = '8px';
+      factsList.appendChild(listItem);
+    });
+
+    // Clear previous content and add new
+    infoPanel.innerHTML = '';
+    
+    // Re-add close button
+    const closeButton = document.createElement('button');
+    closeButton.textContent = '×';
+    closeButton.style.position = 'absolute';
+    closeButton.style.top = '5px';
+    closeButton.style.right = '10px';
+    closeButton.style.background = 'none';
+    closeButton.style.border = 'none';
+    closeButton.style.color = 'white';
+    closeButton.style.fontSize = '20px';
+    closeButton.style.cursor = 'pointer';
+    closeButton.onclick = () => infoPanel.style.display = 'none';
+    
+    infoPanel.appendChild(closeButton);
+    infoPanel.appendChild(title);
+    infoPanel.appendChild(factsList);
+    infoPanel.style.display = 'block';
+  }
+
+  // CLICK DETECTION: Mouse and touch event handlers
+  function onPointerDown(event) {
+    event.preventDefault();
+
+    // Handle both mouse and touch events
+    let clientX, clientY;
+    if (event.type === 'touchstart') {
+      clientX = event.touches[0].clientX;
+      clientY = event.touches[0].clientY;
+    } else {
+      clientX = event.clientX;
+      clientY = event.clientY;
+    }
+
+    // Calculate mouse position in normalized device coordinates
+    const rect = renderer.domElement.getBoundingClientRect();
+    mouse.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+    mouse.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+
+    // Update raycaster
+    raycaster.setFromCamera(mouse, camera);
+
+    // Check for intersections with clickable objects
+    const intersects = raycaster.intersectObjects(clickableObjects, true);
+
+    if (intersects.length > 0) {
+      const clickedObject = intersects[0].object;
+      const planetName = clickedObject.userData.planetName;
+      if (planetName) {
+        showPlanetInfo(planetName);
+      }
+    }
+  }
+
+  // Add event listeners for both mouse and touch
+  renderer.domElement.addEventListener('mousedown', onPointerDown, false);
+  renderer.domElement.addEventListener('touchstart', onPointerDown, false);
+
   // Step 5: Create a group for the solar system to scale it for AR
   const solarSystemGroup = new THREE.Group();
-  solarSystemGroup.scale.setScalar(0.5); // OPTIMIZATION: Smaller scale for better AR performance
+  solarSystemGroup.scale.setScalar(0.5);
   scene.add(solarSystemGroup);
 
   // OPTIMIZATION: Improved lighting setup
   {
-    const ambientLight = new THREE.AmbientLight(0x404040, 0.4); // Soft ambient light
+    const ambientLight = new THREE.AmbientLight(0x404040, 0.4);
     scene.add(ambientLight);
     
     const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
     directionalLight.position.set(-1, 2, 4);
     scene.add(directionalLight);
     
-    // Additional light from opposite direction for better planet visibility
     const fillLight = new THREE.DirectionalLight(0xffffff, 0.3);
     fillLight.position.set(1, -1, -2);
     scene.add(fillLight);
@@ -81,8 +310,6 @@ function main() {
 
   // TEXTURE LOADING: Create texture loader with optimizations
   const textureLoader = new THREE.TextureLoader();
-  
-  // OPTIMIZATION: Preload all textures to avoid loading delays during runtime
   const textures = {};
   const texturePromises = [];
   
@@ -104,7 +331,6 @@ function main() {
       textureLoader.load(
         path,
         (texture) => {
-          // OPTIMIZATION: Optimize texture settings for performance
           texture.generateMipmaps = true;
           texture.wrapS = THREE.RepeatWrapping;
           texture.wrapT = THREE.RepeatWrapping;
@@ -126,31 +352,31 @@ function main() {
     texturePromises.push(promise);
   }
 
-  // SUN ENHANCEMENT: Create enhanced sun with multiple visual effects
-  const sunRadius = 4; // ENHANCEMENT: Larger sun for better visibility
-  // OPTIMIZATION: Reduced segments for better performance while maintaining visual quality
+  // SUN ENHANCEMENT: Create enhanced sun with click detection
+  const sunRadius = 4;
   const sunGeometry = new THREE.SphereGeometry(sunRadius, 24, 16);
   
-  // ENHANCEMENT: Multi-layered sun material for realistic appearance
   const sunMaterial = new THREE.MeshPhongMaterial({ 
     color: 0xffaa00,
-    emissive: 0xff4400, // ENHANCEMENT: Strong emissive for sun glow
+    emissive: 0xff4400,
     emissiveIntensity: 0.6
   });
   const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+  
+  // CLICK DETECTION: Add sun to clickable objects
+  sun.userData.planetName = 'sun';
+  clickableObjects.push(sun);
 
-  // ENHANCEMENT: Add corona layer for sun atmosphere effect
   const coronaGeometry = new THREE.SphereGeometry(sunRadius * 1.15, 16, 12);
   const coronaMaterial = new THREE.MeshBasicMaterial({ 
     color: 0xffaa44, 
     transparent: true, 
     opacity: 0.3,
-    side: THREE.BackSide // Render from inside
+    side: THREE.BackSide
   });
   const corona = new THREE.Mesh(coronaGeometry, coronaMaterial);
   sun.add(corona);
 
-  // ENHANCEMENT: Add outer glow for sun
   const glowGeometry = new THREE.SphereGeometry(sunRadius * 1.3, 16, 12);
   const glowMaterial = new THREE.MeshBasicMaterial({
     color: 0xff6600,
@@ -163,20 +389,17 @@ function main() {
 
   solarSystemGroup.add(sun);
 
-  // PLANET CREATION: Enhanced function with texture support and optimizations
+  // PLANET CREATION: Enhanced function with click detection
   function createPlanet(radius, textureName, orbitRadius, orbitSpeed, specialFeatures = {}) {
-    // OPTIMIZATION: Reduced geometry complexity for better performance
-    const geometry = new THREE.SphereGeometry(radius, 16, 12); // Reduced from 24,8
+    const geometry = new THREE.SphereGeometry(radius, 16, 12);
     
     let material;
     if (textures[textureName]) {
-      // TEXTURE APPLICATION: Use loaded texture
       material = new THREE.MeshPhongMaterial({ 
         map: textures[textureName],
-        shininess: 30 // Add slight shininess for better appearance
+        shininess: 30
       });
     } else {
-      // Fallback to solid color if texture fails
       const fallbackColors = {
         mercury: 0x8C7853,
         venus: 0xFFC649,
@@ -191,12 +414,15 @@ function main() {
     }
     
     const planet = new THREE.Mesh(geometry, material);
+    
+    // CLICK DETECTION: Add planet to clickable objects
+    planet.userData.planetName = textureName;
+    clickableObjects.push(planet);
 
     const orbitGroup = new THREE.Group();
     planet.position.x = orbitRadius;
     orbitGroup.add(planet);
 
-    // ENHANCEMENT: Add orbital trail for better visualization
     const orbitGeometry = new THREE.RingGeometry(orbitRadius - 0.05, orbitRadius + 0.05, 32);
     const orbitMaterial = new THREE.MeshBasicMaterial({ 
       color: 0x444444, 
@@ -208,9 +434,8 @@ function main() {
     orbitRing.rotation.x = Math.PI / 2;
     solarSystemGroup.add(orbitRing);
 
-    // SPECIAL FEATURES: Enhanced planet-specific details
+    // Special features
     if (specialFeatures.rings) {
-      // Saturn rings with better geometry
       const ringGeometry = new THREE.RingGeometry(radius * 1.2, radius * 2, 32);
       const ringMaterial = new THREE.MeshBasicMaterial({ 
         color: 0xC0C0C0, 
@@ -220,12 +445,11 @@ function main() {
       });
       const rings = new THREE.Mesh(ringGeometry, ringMaterial);
       rings.rotation.x = Math.PI / 2;
-      rings.rotation.z = 0.1; // Slight tilt
+      rings.rotation.z = 0.1;
       planet.add(rings);
     }
 
     if (specialFeatures.atmosphere) {
-      // Enhanced atmospheric effect
       const atmosGeometry = new THREE.SphereGeometry(radius * 1.05, 12, 8);
       const atmosMaterial = new THREE.MeshBasicMaterial({ 
         color: specialFeatures.atmosphere, 
@@ -238,7 +462,6 @@ function main() {
     }
 
     if (specialFeatures.moon) {
-      // OPTIMIZATION: Simplified moon geometry
       const moonGeometry = new THREE.SphereGeometry(radius * 0.27, 8, 6);
       const moonMaterial = new THREE.MeshPhongMaterial({ color: 0xC0C0C0 });
       const moon = new THREE.Mesh(moonGeometry, moonMaterial);
@@ -260,7 +483,6 @@ function main() {
   Promise.all(texturePromises).then(() => {
     console.log('All textures loaded, creating planets...');
     
-    // Apply sun texture after loading
     if (textures.sun) {
       sun.material.map = textures.sun;
       sun.material.needsUpdate = true;
@@ -270,42 +492,27 @@ function main() {
     console.warn('Some textures failed to load, using fallback colors:', error);
   });
 
-  // PLANET CREATION: Create planets with textures and enhanced features
+  // PLANET CREATION: Create planets with click detection
   const planets = [];
   
-  // Mercury - small, no atmosphere
   planets.push(createPlanet(0.4, 'mercury', 6, 0.02));
-  
-  // Venus - thick atmosphere
   planets.push(createPlanet(0.6, 'venus', 10, 0.01, {
     atmosphere: 0xffdd88
   }));
-  
-  // Earth - blue with moon and atmosphere
   planets.push(createPlanet(0.8, 'earth', 14, 0.005, {
     atmosphere: 0x87CEEB,
     moon: true
   }));
-  
-  // Mars - red planet
   planets.push(createPlanet(0.5, 'mars', 18, 0.003));
-  
-  // Jupiter - gas giant with atmosphere
   planets.push(createPlanet(1.2, 'jupiter', 22, 0.002, {
     atmosphere: 0xffcc99
   }));
-  
-  // Saturn - with prominent rings
   planets.push(createPlanet(1.1, 'saturn', 26, 0.001, {
     rings: true
   }));
-  
-  // Uranus - tilted ice giant
   planets.push(createPlanet(0.9, 'uranus', 30, 0.0005, {
     atmosphere: 0x66ddff
   }));
-  
-  // Neptune - windy blue giant
   planets.push(createPlanet(0.9, 'neptune', 34, 0.0002, {
     atmosphere: 0x3366ff
   }));
@@ -313,7 +520,6 @@ function main() {
   // Step 3: Initialize AR button
   const arButton = createARButton();
 
-  // OPTIMIZATION: Efficient resize function
   function resizeRendererToDisplaySize(renderer) {
     const canvas = renderer.domElement;
     const pixelRatio = window.devicePixelRatio;
@@ -326,9 +532,8 @@ function main() {
     return needResize;
   }
 
-  // OPTIMIZATION: Efficient render loop
   function render(time) {
-    time *= 0.001; // convert time to seconds
+    time *= 0.001;
 
     if (resizeRendererToDisplaySize(renderer)) {
       const canvas = renderer.domElement;
@@ -336,24 +541,24 @@ function main() {
       camera.updateProjectionMatrix();
     }
 
-    // ENHANCED SUN ANIMATION: Multi-axis rotation for dynamic effect
+    // CONTROLS UPDATE: Update camera controls if available
+    if (controls) {
+      controls.update();
+    }
+
     sun.rotation.x = time * 0.3;
     sun.rotation.y = time * 0.5;
     sun.rotation.z = time * 0.1;
 
-    // OPTIMIZATION: Efficient planet animation
     planets.forEach((planetData) => {
       planetData.orbitGroup.rotation.y = time * planetData.orbitSpeed;
       planetData.planet.rotation.y = time * planetData.rotationSpeed;
       
-      // ENHANCEMENT: Animate special features
       planetData.planet.children.forEach(child => {
         if (child.material && child.material.color && child.material.color.getHex() === 0xC0C0C0) {
-          // Moon orbit animation
           child.rotation.y = time * 2;
         }
         if (child.material && child.material.transparent && child.material.opacity < 0.5) {
-          // Atmosphere rotation
           child.rotation.y = time * 0.1;
         }
       });
@@ -362,7 +567,6 @@ function main() {
     renderer.render(scene, camera);
   }
 
-  // Step 4: Use XR-compatible animation loop
   renderer.setAnimationLoop(render);
 }
 
