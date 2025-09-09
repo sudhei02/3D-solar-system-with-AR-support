@@ -499,25 +499,28 @@ function main() {
   // PLANET CREATION: Create planets with click detection
   const planets = [];
   
-  planets.push(createPlanet(0.4, 'mercury', 6, 0.02));
-  planets.push(createPlanet(0.6, 'venus', 10, 0.01, {
+  // Scientifically accurate orbital speeds (based on real orbital periods)
+  // Base speed for Earth = 0.01, others scaled accordingly
+  
+  planets.push(createPlanet(0.4, 'mercury', 6, 0.041));   // 88 days (365/88 = 4.1x faster than Earth)
+  planets.push(createPlanet(0.6, 'venus', 10, 0.016, {    // 225 days (365/225 = 1.6x faster than Earth)
     atmosphere: 0xffdd88
   }));
-  planets.push(createPlanet(0.8, 'earth', 14, 0.005, {
+  planets.push(createPlanet(0.8, 'earth', 14, 0.010, {    // 365 days (reference speed)
     atmosphere: 0x87CEEB,
     moon: true
   }));
-  planets.push(createPlanet(0.5, 'mars', 18, 0.003));
-  planets.push(createPlanet(1.2, 'jupiter', 22, 0.002, {
+  planets.push(createPlanet(0.5, 'mars', 18, 0.0053));    // 687 days (365/687 = 0.53x Earth speed)
+  planets.push(createPlanet(1.2, 'jupiter', 22, 0.0023, { // 4,333 days (365/4333 = 0.23x Earth speed)
     atmosphere: 0xffcc99
   }));
-  planets.push(createPlanet(1.1, 'saturn', 26, 0.001, {
+  planets.push(createPlanet(1.1, 'saturn', 26, 0.00093, { // 10,759 days (365/10759 = 0.093x Earth speed)
     rings: true
   }));
-  planets.push(createPlanet(0.9, 'uranus', 30, 0.0005, {
+  planets.push(createPlanet(0.9, 'uranus', 30, 0.00032, { // 30,687 days (365/30687 = 0.032x Earth speed)
     atmosphere: 0x66ddff
   }));
-  planets.push(createPlanet(0.9, 'neptune', 34, 0.0002, {
+  planets.push(createPlanet(0.9, 'neptune', 34, 0.00016, { // 60,190 days (365/60190 = 0.016x Earth speed)
     atmosphere: 0x3366ff
   }));
 

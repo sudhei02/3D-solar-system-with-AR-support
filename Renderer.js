@@ -10,7 +10,7 @@ class Renderer {
   }
 
   async initRenderer() {
-    // Check if WebXR is supported
+    // checking webxr support
     if ('xr' in navigator) {
       const isARSupported = await navigator.xr.isSessionSupported('immersive-ar');
       if (isARSupported) {
