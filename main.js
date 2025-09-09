@@ -56,7 +56,7 @@ function main() {
   const far = 100;
   const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
   // Position camera further back to view solar system at z=-3
-  camera.position.set(0, 0, 40);
+  camera.position.set(0, 0, 35);
 
   const scene = new THREE.Scene();
 
