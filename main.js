@@ -53,9 +53,10 @@ function main() {
   const fov = 75;
   const aspect = 2;
   const near = 0.1;
-  const far = 50;
+  const far = 100;
   const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-  camera.position.z = 35;
+  // Position camera further back to view solar system at z=-3
+  camera.position.set(0, 0, 40);
 
   const scene = new THREE.Scene();
 
@@ -293,6 +294,8 @@ function main() {
   // Step 5: Create a group for the solar system to scale it for AR
   const solarSystemGroup = new THREE.Group();
   solarSystemGroup.scale.setScalar(0.5);
+  // Position solar system 3 meters in front of camera for optimal AR viewing
+  solarSystemGroup.position.set(0, 0, -3);
   scene.add(solarSystemGroup);
 
   // OPTIMIZATION: Improved lighting setup
