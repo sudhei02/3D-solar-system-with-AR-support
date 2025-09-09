@@ -291,45 +291,6 @@ function main() {
   renderer.domElement.addEventListener('mousedown', onPointerDown, false);
   renderer.domElement.addEventListener('touchstart', onPointerDown, false);
 
-  // PINCH TO ZOOM: Add pinch-to-zoom functionality
-  let lastPinchDistance = 0;
-  let currentScale = 0.5; // Initial scale of solar system
-
-  function getPinchDistance(touches) {
-    const dx = touches[0].clientX - touches[1].clientX;
-    const dy = touches[0].clientY - touches[1].clientY;
-    return Math.sqrt(dx * dx + dy * dy);
-  }
-
-  function onTouchMove(event) {
-    if (event.touches.length === 2) {
-      event.preventDefault();
-      
-      const pinchDistance = getPinchDistance(event.touches);
-      
-      if (lastPinchDistance > 0) {
-        const scaleFactor = pinchDistance / lastPinchDistance;
-        currentScale *= scaleFactor;
-        
-        // Limit scale between 0.1 and 2.0
-        currentScale = Math.max(0.1, Math.min(2.0, currentScale));
-        
-        solarSystemGroup.scale.setScalar(currentScale);
-      }
-      
-      lastPinchDistance = pinchDistance;
-    }
-  }
-
-  function onTouchEnd(event) {
-    if (event.touches.length < 2) {
-      lastPinchDistance = 0;
-    }
-  }
-
-  renderer.domElement.addEventListener('touchmove', onTouchMove, false);
-  renderer.domElement.addEventListener('touchend', onTouchEnd, false);
-
   // Step 5: Create a group for the solar system to scale it for AR
   const solarSystemGroup = new THREE.Group();
   solarSystemGroup.scale.setScalar(0.5);
