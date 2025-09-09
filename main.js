@@ -176,9 +176,10 @@ function main() {
   function createInfoPanel() {
     const panel = document.createElement('div');
     panel.id = 'info-panel';
-    panel.style.position = 'absolute';
-    panel.style.top = '20px';
-    panel.style.left = '20px';
+    panel.style.position = 'fixed';
+    panel.style.top = '50%';
+    panel.style.left = '50%';
+    panel.style.transform = 'translate(-50%, -50%)';
     panel.style.background = 'rgba(0, 0, 0, 0.8)';
     panel.style.color = 'white';
     panel.style.padding = '20px';
