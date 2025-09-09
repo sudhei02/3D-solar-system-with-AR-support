@@ -210,106 +210,8 @@ function main() {
 
   const infoPanel = createInfoPanel();
 
-  // AR LABEL: Store active labels to manage them
-  let activeARLabels = [];
-
-  // AR LABEL: Function to show simple planet name label in AR
-  function showARLabel(planetName) {
-    // Remove existing labels first
-    clearARLabels();
-
-    // Find the planet object to position label above it
-    const planetObject = clickableObjects.find(obj => obj.userData.planetName === planetName);
-    if (!planetObject) return;
-
-    // Get planet's world position
-    const planetWorldPos = new THREE.Vector3();
-    planetObject.getWorldPosition(planetWorldPos);
-
-    // Create text label using HTML/CSS instead of 3D text for better performance
-    const labelDiv = document.createElement('div');
-    labelDiv.style.position = 'absolute';
-    labelDiv.style.color = '#FFD700';
-    labelDiv.style.fontSize = '18px';
-    labelDiv.style.fontWeight = 'bold';
-    labelDiv.style.background = 'rgba(0, 0, 0, 0.7)';
-    labelDiv.style.padding = '8px 12px';
-    labelDiv.style.borderRadius = '8px';
-    labelDiv.style.border = '2px solid #FFD700';
-    labelDiv.style.textAlign = 'center';
-    labelDiv.style.pointerEvents = 'none';
-    labelDiv.style.zIndex = '1001';
-    labelDiv.style.fontFamily = 'Arial, sans-serif';
-    labelDiv.style.textShadow = '0 0 10px rgba(255, 215, 0, 0.8)';
-    labelDiv.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.5)';
-    labelDiv.textContent = planetName.charAt(0).toUpperCase() + planetName.slice(1);
-
-    // Position the label (this will be updated in the render loop)
-    labelDiv.style.left = '50%';
-    labelDiv.style.top = '30%';
-    labelDiv.style.transform = 'translate(-50%, -50%)';
-
-    document.body.appendChild(labelDiv);
-    
-    // Store reference to the label and its associated planet
-    activeARLabels.push({
-      element: labelDiv,
-      planetObject: planetObject,
-      planetName: planetName
-    });
-
-    // Auto-hide label after 3 seconds
-    setTimeout(() => {
-      clearARLabels();
-    }, 3000);
-  }
-
-  // AR LABEL: Function to clear all AR labels
-  function clearARLabels() {
-    activeARLabels.forEach(label => {
-      if (label.element && label.element.parentNode) {
-        label.element.parentNode.removeChild(label.element);
-      }
-    });
-    activeARLabels = [];
-  }
-
-  // AR LABEL: Function to update AR label positions
-  function updateARLabelPositions() {
-    activeARLabels.forEach(label => {
-      if (!label.element || !label.planetObject) return;
-
-      // Get planet's current world position
-      const planetWorldPos = new THREE.Vector3();
-      label.planetObject.getWorldPosition(planetWorldPos);
-
-      // Add offset above the planet
-      planetWorldPos.y += label.planetObject.geometry.parameters.radius + 1;
-
-      // Project 3D position to 2D screen coordinates
-      const screenPos = planetWorldPos.clone();
-      screenPos.project(camera);
-
-      // Convert to screen pixels
-      const canvas = renderer.domElement;
-      const x = (screenPos.x * 0.5 + 0.5) * canvas.clientWidth;
-      const y = (screenPos.y * -0.5 + 0.5) * canvas.clientHeight;
-
-      // Update label position
-      label.element.style.left = x + 'px';
-      label.element.style.top = y + 'px';
-      label.element.style.transform = 'translate(-50%, -100%)';
-    });
-  }
-
   // CLICK HANDLER: Function to show planet facts
   function showPlanetInfo(planetName) {
-    // Check if we're in AR mode
-    if (renderer.xr.isPresenting) {
-      showARLabel(planetName);
-      return;
-    }
-
     const info = planetFacts[planetName];
     if (!info) return;
 
@@ -671,11 +573,6 @@ function main() {
         }
       });
     });
-
-    // Update AR label positions if in AR mode
-    if (renderer.xr.isPresenting && activeARLabels.length > 0) {
-      updateARLabelPositions();
-    }
 
     renderer.render(scene, camera);
   }
