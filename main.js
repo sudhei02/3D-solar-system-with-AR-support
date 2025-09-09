@@ -357,7 +357,7 @@ function main() {
   }
 
   // SUN ENHANCEMENT: Create enhanced sun with click detection
-  const sunRadius = 4;
+  const sunRadius = 2.5;
   const sunGeometry = new THREE.SphereGeometry(sunRadius, 24, 16);
   
   const sunMaterial = new THREE.MeshPhongMaterial({ 
