@@ -423,6 +423,9 @@ function main() {
     planet.position.x = orbitRadius;
     orbitGroup.add(planet);
 
+    // ORBITAL POSITIONING: Start planets at different positions (not aligned)
+    orbitGroup.rotation.y = Math.random() * Math.PI * 2;
+
     const orbitGeometry = new THREE.RingGeometry(orbitRadius - 0.05, orbitRadius + 0.05, 32);
     const orbitMaterial = new THREE.MeshBasicMaterial({ 
       color: 0x444444, 
