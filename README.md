@@ -85,15 +85,15 @@ Each planet comes with real astronomical data (simplified for sanity):
 
 | Planet | Fun Fact |
 |--------|----------|
-| ☀️ Sun | 4.6 billion years old! |
-| ☿️ Mercury | Fastest orbit - 88 Earth days |
-| ♀️ Venus | Hottest planet - 900°F! |
-| 🌍 Earth | Our beautiful blue marble |
-| ♂️ Mars | The Red Planet with polar ice |
-| ♃ Jupiter | Gas giant with 95+ moons |
-| ♄ Saturn | Stunning ring system |
-| ♅ Uranus | Tilted at 98 degrees! |
-| ♆ Neptune | Windiest planet - 1,200 mph |
+|  Sun | 4.6 billion years old! |
+|  Mercury | Fastest orbit - 88 Earth days |
+|  Venus | Hottest planet - 900°F! |
+|  Earth | Our beautiful blue marble |
+|  Mars | The Red Planet with polar ice |
+|  Jupiter | Gas giant with 95+ moons |
+|  Saturn | Stunning ring system |
+|  Uranus | Tilted at 98 degrees! |
+|  Neptune | Windiest planet - 1,200 mph |
 
 ---
 
@@ -139,6 +139,6 @@ This project taught me a lot about:
 
 <div align="center">
 
-*Made with caffeine and debugging frustration during summer 2024* ☕
+*Made with caffeine and debugging frustration during summer 2025* ☕
 
 </div>
