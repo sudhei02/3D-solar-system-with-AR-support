@@ -113,10 +113,12 @@ This project taught me a lot about:
 - The sun is way too small compared to real life (but if I made it realistic, you wouldn't see the planets)
 
 **If I have time to come back to this:**
-- [ ] Add Saturn's rings (started working on this but got distracted)
-- [ ] Include some of the major moons  
-- [ ] Better mobile performance
-- [ ] Maybe add some asteroid belt particles
+-  Add Saturn's rings (started working on this but got distracted)
+-  Include some of the major moons  
+-  Better mobile performance
+-  Maybe add some asteroid belt particles
+-  Improve UI :)
+-  Add more animations and cool features maybe?
 
 ---
 
