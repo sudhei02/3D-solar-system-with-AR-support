@@ -9,7 +9,7 @@
 
 *A 3D solar system simulator I built during my TUBITAK UZAY internship*
 
-[🚀 Live Demo](#setup) • [📱 AR Features](#what-it-does) • [🛠️ How I Built It](#how-i-built-it)
+[ Live Demo](#setup) • [ AR Features](#what-it-does) • [ How I Built It](#how-i-built-it)
 
 </div>
 
