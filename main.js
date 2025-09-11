@@ -478,11 +478,26 @@ function main() {
 
     solarSystemGroup.add(orbitGroup);
 
+    // Scientifically accurate but faster and more visible rotation speeds
+    let rotationSpeed;
+    switch(textureName) {
+      case 'mercury': rotationSpeed = 0.2; break;   // Fast rotation (58.6 Earth days) - 5x faster
+      case 'venus': rotationSpeed = -0.01; break;   // Very slow retrograde (243 Earth days) - 5x faster
+      case 'earth': rotationSpeed = 0.1; break;     // Reference speed (24 hours) - 5x faster
+      case 'mars': rotationSpeed = 0.095; break;    // Similar to Earth (24.6 hours) - 5x faster
+      case 'jupiter': rotationSpeed = 0.25; break;  // Fast rotation (9.9 hours) - 5x faster
+      case 'saturn': rotationSpeed = 0.225; break;  // Fast rotation (10.7 hours) - 5x faster
+      case 'uranus': rotationSpeed = 0.125; break;  // Moderate speed (17.2 hours) - 5x faster
+      case 'neptune': rotationSpeed = 0.15; break;  // Moderate speed (16.1 hours) - 5x faster
+      case 'sun': rotationSpeed = 0.04; break;      // Slow sun rotation (25 Earth days) - 5x faster
+      default: rotationSpeed = 0.1; break;
+    }
+
     return {
       planet: planet,
       orbitGroup: orbitGroup,
       orbitSpeed: orbitSpeed,
-      rotationSpeed: Math.random() * 0.02 + 0.01,
+      rotationSpeed: rotationSpeed,
     };
   }
 
@@ -502,28 +517,28 @@ function main() {
   // PLANET CREATION: Create planets with click detection
   const planets = [];
   
-  // Scientifically accurate orbital speeds (based on real orbital periods)
-  // Base speed for Earth = 0.01, others scaled accordingly
+  // Faster but scientifically accurate orbital speeds (multiplied by 10 for visibility)
+  // Base speed for Earth = 0.10, others scaled accordingly
   
-  planets.push(createPlanet(0.4, 'mercury', 6, 0.50));   // 88 days (365/88 = 4.1x faster than Earth)
-  planets.push(createPlanet(0.6, 'venus', 10, 0.016, {    // 225 days (365/225 = 1.6x faster than Earth)
+  planets.push(createPlanet(0.4, 'mercury', 6, 0.2));   // 88 days (365/88 = 4.1x faster than Earth)
+  planets.push(createPlanet(0.6, 'venus', 10, 0.16, {    // 225 days (365/225 = 1.6x faster than Earth)
     atmosphere: 0xffdd88
   }));
-  planets.push(createPlanet(0.8, 'earth', 14, 0.010, {    // 365 days (reference speed)
+  planets.push(createPlanet(0.8, 'earth', 14, 0.10, {    // 365 days (reference speed)
     atmosphere: 0x87CEEB,
     moon: true
   }));
-  planets.push(createPlanet(0.5, 'mars', 18, 0.0053));    // 687 days (365/687 = 0.53x Earth speed)
-  planets.push(createPlanet(1.2, 'jupiter', 22, 0.0023, { // 4,333 days (365/4333 = 0.23x Earth speed)
+  planets.push(createPlanet(0.5, 'mars', 18, 0.053));    // 687 days (365/687 = 0.53x Earth speed)
+  planets.push(createPlanet(1.2, 'jupiter', 22, 0.023, { // 4,333 days (365/4333 = 0.23x Earth speed)
     atmosphere: 0xffcc99
   }));
-  planets.push(createPlanet(1.1, 'saturn', 26, 0.00093, { // 10,759 days (365/10759 = 0.093x Earth speed)
+  planets.push(createPlanet(1.1, 'saturn', 26, 0.0093, { // 10,759 days (365/10759 = 0.093x Earth speed)
     rings: true
   }));
-  planets.push(createPlanet(0.9, 'uranus', 30, 0.00032, { // 30,687 days (365/30687 = 0.032x Earth speed)
+  planets.push(createPlanet(0.9, 'uranus', 30, 0.0032, { // 30,687 days (365/30687 = 0.032x Earth speed)
     atmosphere: 0x66ddff
   }));
-  planets.push(createPlanet(0.9, 'neptune', 34, 0.00016, { // 60,190 days (365/60190 = 0.016x Earth speed)
+  planets.push(createPlanet(0.9, 'neptune', 34, 0.0016, { // 60,190 days (365/60190 = 0.016x Earth speed)
     atmosphere: 0x3366ff
   }));
 
@@ -556,9 +571,10 @@ function main() {
       controls.update();
     }
 
-    sun.rotation.x = time * 0.3;
-    sun.rotation.y = time * 0.5;
-    sun.rotation.z = time * 0.1;
+    // Sun rotation (scientifically accurate but visible)
+    sun.rotation.x = time * 0.008;  // Slow rotation based on 25-day period
+    sun.rotation.y = time * 0.01;   // Primary rotation axis
+    sun.rotation.z = time * 0.005;  // Slight wobble
 
     planets.forEach((planetData) => {
       planetData.orbitGroup.rotation.y = time * planetData.orbitSpeed;
