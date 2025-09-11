@@ -478,11 +478,26 @@ function main() {
 
     solarSystemGroup.add(orbitGroup);
 
+    // Scientifically accurate but user-friendly rotation speeds
+    let rotationSpeed;
+    switch(textureName) {
+      case 'mercury': rotationSpeed = 0.04; break;  // Fast rotation (58.6 Earth days)
+      case 'venus': rotationSpeed = -0.002; break;  // Very slow retrograde (243 Earth days)
+      case 'earth': rotationSpeed = 0.02; break;    // Reference speed (24 hours)
+      case 'mars': rotationSpeed = 0.019; break;    // Similar to Earth (24.6 hours)
+      case 'jupiter': rotationSpeed = 0.05; break;  // Fast rotation (9.9 hours)
+      case 'saturn': rotationSpeed = 0.045; break;  // Fast rotation (10.7 hours)
+      case 'uranus': rotationSpeed = 0.025; break;  // Moderate speed (17.2 hours)
+      case 'neptune': rotationSpeed = 0.03; break;  // Moderate speed (16.1 hours)
+      case 'sun': rotationSpeed = 0.008; break;     // Slow sun rotation (25 Earth days)
+      default: rotationSpeed = 0.02; break;
+    }
+
     return {
       planet: planet,
       orbitGroup: orbitGroup,
       orbitSpeed: orbitSpeed,
-      rotationSpeed: Math.random() * 0.02 + 0.01,
+      rotationSpeed: rotationSpeed,
     };
   }
 
@@ -556,9 +571,10 @@ function main() {
       controls.update();
     }
 
-    sun.rotation.x = time * 0.3;
-    sun.rotation.y = time * 0.5;
-    sun.rotation.z = time * 0.1;
+    // Sun rotation (scientifically accurate but visible)
+    sun.rotation.x = time * 0.008;  // Slow rotation based on 25-day period
+    sun.rotation.y = time * 0.01;   // Primary rotation axis
+    sun.rotation.z = time * 0.005;  // Slight wobble
 
     planets.forEach((planetData) => {
       planetData.orbitGroup.rotation.y = time * planetData.orbitSpeed;
