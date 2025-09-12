@@ -1,0 +1,119 @@
+graph TB
+    subgraph "Frontend Layer"
+        A[index.html] 
+        B[style.css]
+        C[main.js]
+    end
+    
+    subgraph "Core Components"
+        D[SolarSystemApp]
+        E[PlanetFactory]
+        F[XRSessionManager]
+        G[EventHandler]
+        H[OrbitController]
+    end
+    
+    subgraph "Three.js Core"
+        I[WebGLRenderer]
+        J[Scene]
+        K[PerspectiveCamera]
+        L[OrbitControls]
+        M[TextureLoader]
+    end
+    
+    subgraph "WebXR Integration"
+        N[XRSession]
+        O[XRReferenceSpace]
+        P[XRFrame]
+        Q[XRPose]
+    end
+    
+    subgraph "3D Objects"
+        R[Sun Mesh]
+        S[Mercury Mesh]
+        T[Venus Mesh]
+        U[Earth Mesh]
+        V[Mars Mesh]
+        W[Jupiter Mesh]
+        X[Saturn Mesh]
+        Y[Uranus Mesh]
+        Z[Neptune Mesh]
+    end
+    
+    subgraph "Assets"
+        AA[Planet Textures]
+        BB[Material Shaders]
+        CC[Geometry Data]
+    end
+    
+    subgraph "User Interface"
+        DD[AR Button]
+        EE[Planet Info Panel]
+        FF[Error Messages]
+        GG[Loading Indicators]
+    end
+    
+    A --> C
+    B --> A
+    C --> D
+    D --> E
+    D --> F
+    D --> G
+    D --> H
+    D --> I
+    D --> J
+    D --> K
+    D --> L
+    E --> M
+    F --> N
+    F --> O
+    N --> P
+    P --> Q
+    I --> J
+    E --> R
+    E --> S
+    E --> T
+    E --> U
+    E --> V
+    E --> W
+    E --> X
+    E --> Y
+    E --> Z
+    AA --> R
+    AA --> S
+    AA --> T
+    AA --> U
+    AA --> V
+    AA --> W
+    AA --> X
+    AA --> Y
+    AA --> Z
+    BB --> R
+    BB --> S
+    BB --> T
+    BB --> U
+    BB --> V
+    BB --> W
+    BB --> X
+    BB --> Y
+    BB --> Z
+    CC --> R
+    CC --> S
+    CC --> T
+    CC --> U
+    CC --> V
+    CC --> W
+    CC --> X
+    CC --> Y
+    CC --> Z
+    G --> DD
+    G --> EE
+    G --> FF
+    G --> GG
+
+    style D fill:#FFD700
+    style F fill:#FF6B6B
+    style I fill:#4ECDC4
+    style N fill:#45B7D1
+    style R fill:#FFA500
+    style DD fill:#98FB98

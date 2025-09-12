@@ -1,0 +1,49 @@
+flowchart TD
+    A[Uygulama Başlatma] --> B{WebXR Desteği Var mı?}
+    B -->|Evet| C[AR Modu Butonu Göster]
+    B -->|Hayır| D[Normal 3D Modu]
+    
+    C --> E[Kullanıcı AR Butonu Tıklar]
+    E --> F[XR Session İsteği]
+    F --> G{Kamera İzni Var mı?}
+    
+    G -->|Evet| H[AR Session Başlat]
+    G -->|Hayır| I[İzin İste]
+    I --> J{İzin Verildi mi?}
+    J -->|Evet| H
+    J -->|Hayır| K[Hata Mesajı Göster]
+    
+    H --> L[Kamera Feed Başlat]
+    L --> M[3D Solar System Render]
+    M --> N[AR Ortamında Göster]
+    
+    N --> O{Kullanıcı Etkileşimi}
+    O -->|Planet Tıklama| P[Planet Bilgisi Göster]
+    O -->|Zoom/Pan| Q[Kamera Kontrolü]
+    O -->|AR Session Sonlandır| R[Normal Moda Dön]
+    
+    P --> N
+    Q --> N
+    R --> D
+    K --> D
+    
+    subgraph "AR Session Yaşam Döngüsü"
+        H
+        L
+        M
+        N
+        O
+    end
+    
+    subgraph "Hata Yönetimi"
+        K
+        S[WebXR Desteklenmiyor]
+        T[Kamera Erişim Hatası]
+        U[Session Başlatma Hatası]
+    end
+
+    style A fill:#4CAF50
+    style H fill:#2196F3
+    style N fill:#FF9800
+    style D fill:#9E9E9E
+    style K fill:#F44336

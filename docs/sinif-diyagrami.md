@@ -1,0 +1,75 @@
+# Sınıf Diyagramı
+
+```mermaid
+classDiagram
+    class SolarSystemApp {
+        -scene: THREE.Scene
+        -camera: THREE.PerspectiveCamera
+        -renderer: THREE.WebGLRenderer
+        -controls: OrbitControls
+        -xrSessionManager: XRSessionManager
+        -planets: Array~Planet~
+        +init()
+        +animate()
+        +startAR()
+        +stopAR()
+    }
+    
+    class Planet {
+        -name: string
+        -mesh: THREE.Mesh
+        -orbitRadius: number
+        -rotationSpeed: number
+        -orbitSpeed: number
+        -texture: THREE.Texture
+        +constructor(name, radius, texture, distance)
+        +updateRotation()
+        +updateOrbit()
+        +onClick()
+    }
+    
+    class PlanetFactory {
+        +createPlanet(name: string, config: PlanetConfig): Planet
+        +loadTexture(path: string): THREE.Texture
+    }
+    
+    class XRSessionManager {
+        -session: XRSession
+        -referenceSpace: XRReferenceSpace
+        -isARSupported: boolean
+        +checkARSupport(): boolean
+        +startSession(): Promise~XRSession~
+        +endSession(): void
+        +onSessionStart()
+        +onSessionEnd()
+    }
+    
+    class OrbitController {
+        -planets: Array~Planet~
+        -time: number
+        +updateOrbits()
+        +calculatePosition(planet: Planet): Vector3
+    }
+    
+    class EventHandler {
+        -raycaster: THREE.Raycaster
+        -mouse: THREE.Vector2
+        +onMouseClick(event: MouseEvent)
+        +onTouchStart(event: TouchEvent)
+        +detectPlanetClick(): Planet
+    }
+    
+    class TextureLoader {
+        -loader: THREE.TextureLoader
+        +loadPlanetTextures(): Map~string, THREE.Texture~
+        +loadTexture(path: string): Promise~THREE.Texture~
+    }
+
+    SolarSystemApp --> Planet : contains
+    SolarSystemApp --> XRSessionManager : uses
+    SolarSystemApp --> OrbitController : uses
+    SolarSystemApp --> EventHandler : uses
+    PlanetFactory --> Planet : creates
+    PlanetFactory --> TextureLoader : uses
+    OrbitController --> Planet : controls
+    EventHandler --> Planet : interacts with
